@@ -4,20 +4,85 @@ import java.util.Scanner;
 
 public class Cinema {
 
+    private static seat[][] roomArray;
+    private static int rows;
+    private static int columns;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-//        System.out.println(getRoomString());
         System.out.println("Enter the number of rows:");
-        int rows = scanner.nextInt();
+        rows = scanner.nextInt();
         System.out.println("Enter the number of seats in each row:");
-        int columns = scanner.nextInt();
-        int[][] roomArray = new int[columns][rows];
-        System.out.println("Total income:");
-        System.out.println("$" + getIncome(rows,columns));
+        columns = scanner.nextInt();
+        System.out.println();
+
+        init(columns, rows);
+        drawRoom();
+        bookSeat(scanner);
+        drawRoom();
+
+//        System.out.println("Total income:");
+//        System.out.println("$" + getIncome(rows, columns));
+    }
+
+    private static void bookSeat(Scanner scanner) {
+        System.out.println("Enter a row number:");
+        int row = scanner.nextInt();
+        System.out.println("Enter a seat number in that row:");
+        int column = scanner.nextInt();
+        System.out.println();
+
+        seat seat = roomArray[row-1][column-1];
+        seat.setStatus('B');
+        System.out.println("Ticket price: $" + seat.getPrice());
+        System.out.println();
+    }
+
+
+    private static void drawRoom() {
+        System.out.println("Cinema:");
+        char[][] printArray = new char[(rows + 1)][(columns + 1)];
+        printArray[0][0] = ' ';
+        for (int j = 1; j < printArray.length; j++) {
+            printArray[j][0] = (char) ('0' + j);
+        }
+        for (int i = 1; i < printArray[0].length; i++) {
+            printArray[0][i] = (char) ('0' + i);
+
+        }
+        for (int i = 0; i < roomArray.length; i++) {
+            for (int j = 0; j < roomArray[i].length; j++) {
+                printArray[i+1][j+1] = roomArray[i][j].getStatus();
+            }
+        }
+
+        for (int j = 0; j < printArray.length; j++) {
+            for (int i = 0; i < printArray[j].length; i++) {
+                System.out.print(printArray[j][i] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+
+    private static void init(int coloumns, int rows) {
+        roomArray = new seat[rows][coloumns];
+        final int PREMIUM = 10;
+        final int BUDGET = 8;
+        int price;
+
+        for (int j = 0; j < roomArray.length; j++) {
+            for (int i = 0; i < roomArray[0].length; i++) {
+                price = rows * coloumns > 60 && j >= roomArray.length / 2 ? BUDGET : PREMIUM;
+                roomArray[j][i] = new seat(price, 'S');
+            }
+
+        }
     }
 
     private static int getIncome(int rows, int columns) {
-        int income = 0;
+        int income;
         final int PREMIUM = 10;
         final int BUDGET = 8;
         if (rows * columns > 60) {
@@ -29,21 +94,35 @@ public class Cinema {
         return income;
     }
 
-    private static String getRoomString() {
-        String roomString = """
-                Cinema:
-                  1 2 3 4 5 6 7 8
-                1 S S S S S S S S
-                2 S S S S S S S S
-                3 S S S S S S S S
-                4 S S S S S S S S
-                5 S S S S S S S S
-                6 S S S S S S S S
-                7 S S S S S S S S""";
-        return roomString;
-    }
 }
 
+class seat {
+    private int price;
+    private char status;
+
+    //constructor
+    public seat(int price, char status) {
+        this.price = price;
+        this.status = status;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public char getStatus() {
+        return status;
+    }
+
+    public void setStatus(char status) {
+        this.status = status;
+    }
+
+}
 
 /*
 room profit
