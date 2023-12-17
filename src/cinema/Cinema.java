@@ -17,9 +17,34 @@ public class Cinema {
         System.out.println();
 
         init(columns, rows);
-        drawRoom();
-        bookSeat(scanner);
-        drawRoom();
+        System.out.println("""
+                1. Show the seats
+                2. Buy a ticket
+                0. Exit""");
+
+        while (true) {
+
+                switch (scanner.nextInt()) {
+                    case 1 -> {
+                        System.out.println();
+                        drawRoom();
+                        break;
+                    }
+                    case 2 -> {
+                        System.out.println();
+                        bookSeat(scanner);
+                        break;
+                    }
+                    case 0 -> {
+                        return;
+                    }
+
+                }
+            System.out.println("""
+                1. Show the seats
+                2. Buy a ticket
+                0. Exit""");
+        }
 
 //        System.out.println("Total income:");
 //        System.out.println("$" + getIncome(rows, columns));
