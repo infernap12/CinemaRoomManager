@@ -4,9 +4,15 @@ import java.util.Scanner;
 
 public class Cinema {
 
+    private static final int PREMIUM = 10;
+    private static final int BUDGET = 8;
     private static seat[][] roomArray;
     private static int rows;
     private static int columns;
+    private static int sales;
+    private static int income;
+
+
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -14,53 +20,77 @@ public class Cinema {
         rows = scanner.nextInt();
         System.out.println("Enter the number of seats in each row:");
         columns = scanner.nextInt();
-        System.out.println();
 
         init(columns, rows);
-        System.out.println("""
-                1. Show the seats
-                2. Buy a ticket
-                0. Exit""");
 
-        while (true) {
-
-                switch (scanner.nextInt()) {
-                    case 1 -> {
-                        System.out.println();
-                        drawRoom();
-                        break;
-                    }
-                    case 2 -> {
-                        System.out.println();
-                        bookSeat(scanner);
-                        break;
-                    }
-                    case 0 -> {
-                        return;
-                    }
-
-                }
+        int result;
+        do {
             System.out.println("""
-                1. Show the seats
-                2. Buy a ticket
-                0. Exit""");
-        }
+                    
+                    1. Show the seats
+                    2. Buy a ticket
+                    3. Statistics
+                    0. Exit""");
+            result = scanner.nextInt();
+            switch (result) {
+                case 1 -> {
+                    System.out.println();
+                    drawRoom();
+                }
+                case 2 -> {
+                    System.out.println();
+                    bookSeat();
+                }
+                case 3 -> {
+                    System.out.println();
+                    drawStats();
+                }
+                case 0 -> {
+                    return;
+                }
 
-//        System.out.println("Total income:");
-//        System.out.println("$" + getIncome(rows, columns));
+            }
+        } while (true);
     }
 
-    private static void bookSeat(Scanner scanner) {
-        System.out.println("Enter a row number:");
-        int row = scanner.nextInt();
-        System.out.println("Enter a seat number in that row:");
-        int column = scanner.nextInt();
-        System.out.println();
+    private static void drawStats() {
+        System.out.println("Number of purchased tickets: " + sales);
+        System.out.println("Percentage: " + getPercentage() + "%");
+        System.out.println("Current income: $" + income);
+        System.out.println("Total income: $" + getIncome());
+    }
 
-        seat seat = roomArray[row-1][column-1];
-        seat.setStatus('B');
-        System.out.println("Ticket price: $" + seat.getPrice());
-        System.out.println();
+    private static String getPercentage() {
+        int totalSeats = (rows) * (columns);
+        double percentage = (double)sales / totalSeats * 100;
+        return String.format("%.2f", percentage);
+    }
+
+    private static void bookSeat() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("Enter a row number:");
+            int row = scanner.nextInt();
+            System.out.println("Enter a seat number in that row:");
+            int column = scanner.nextInt();
+            System.out.println();
+            seat seat = null;
+            try {
+                seat = roomArray[row-1][column-1];
+            } catch (Exception e) {
+                System.out.println("Wrong input!");
+                continue;
+            }
+            if (seat.getStatus() == 'B') {
+                System.out.println("That ticket has already been purchased!");
+                continue;
+            }
+            seat.setStatus('B');
+            System.out.println("Ticket price: $" + seat.getPrice());
+            sales++;
+            income += seat.getPrice();
+            break;
+        }
     }
 
 
@@ -91,25 +121,21 @@ public class Cinema {
     }
 
 
-    private static void init(int coloumns, int rows) {
-        roomArray = new seat[rows][coloumns];
-        final int PREMIUM = 10;
-        final int BUDGET = 8;
+    private static void init(int columns, int rows) {
+        roomArray = new seat[rows][columns];
         int price;
 
         for (int j = 0; j < roomArray.length; j++) {
             for (int i = 0; i < roomArray[0].length; i++) {
-                price = rows * coloumns > 60 && j >= roomArray.length / 2 ? BUDGET : PREMIUM;
+                price = rows * columns > 60 && j >= roomArray.length / 2 ? BUDGET : PREMIUM;
                 roomArray[j][i] = new seat(price, 'S');
             }
 
         }
     }
 
-    private static int getIncome(int rows, int columns) {
+    private static int getIncome() {
         int income;
-        final int PREMIUM = 10;
-        final int BUDGET = 8;
         if (rows * columns > 60) {
             income = (rows / 2) * columns * PREMIUM;
             income += (rows - (rows / 2)) * columns * BUDGET;
@@ -148,20 +174,5 @@ class seat {
     }
 
 }
-
-/*
-room profit
-if seats < 60 $10 a seat
-if seats more than 60
-row / 2 = rows that are $10 seat the other rows are $8 a seat
-how to handle grabbing other rows?
-row count - (row / 2) == cheap row count?
-
-git this stuff
-
-key value pairs inside 2d array?
-3d array with static positions?
-ticket price, occupied status
- */
 
 
